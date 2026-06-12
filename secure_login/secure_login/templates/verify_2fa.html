@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Verify Identity · SecureVault{% endblock %}
+
+{% block content %}
+<main class="auth-layout">
+  <div class="auth-card">
+
+    <header class="auth-header">
+      <div class="auth-logo">
+        <div class="logo-pulse logo-pulse--1"></div>
+        <div class="logo-pulse logo-pulse--2"></div>
+        <div class="logo-pulse logo-pulse--3"></div>
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+      </div>
+      <h1 class="auth-title">Verify Identity</h1>
+      <p class="auth-subtitle font-mono">Enter your 2FA code to continue</p>
+    </header>
+
+    <div class="twofa-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+      </svg>
+      <p>Open your authenticator app and enter the 6-digit code for <strong>SecureVault</strong>.</p>
+    </div>
+
+    <form class="auth-form" method="POST" action="{{ url_for('verify_2fa') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="field">
+        <label class="field__label font-mono" for="code">Authentication Code</label>
+        <div class="field__wrap">
+          <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <input class="field__input field__input--code font-mono" type="text" id="code" name="code"
+                 placeholder="000 000" maxlength="7" autocomplete="one-time-code"
+                 pattern="\d{6}" inputmode="numeric" autofocus required>
+        </div>
+        <span class="field__hint">Code refreshes every 30 seconds</span>
+      </div>
+
+      <button class="btn btn--primary" type="submit">
+        Verify
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </button>
+    </form>
+
+    <footer class="auth-footer">
+      <a href="{{ url_for('login') }}">← Back to sign in</a>
+    </footer>
+  </div>
+</main>
+{% endblock %}

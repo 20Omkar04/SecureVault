@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Set Up 2FA · SecureVault{% endblock %}
+
+{% block content %}
+<main class="auth-layout">
+  <div class="auth-card auth-card--wide">
+
+    <header class="auth-header">
+      <div class="auth-logo">
+        <div class="logo-pulse logo-pulse--1"></div>
+        <div class="logo-pulse logo-pulse--2"></div>
+        <div class="logo-pulse logo-pulse--3"></div>
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h1 class="auth-title">Enable 2FA</h1>
+      <p class="auth-subtitle font-mono">Secure your account with TOTP</p>
+    </header>
+
+    <div class="twofa-setup">
+      <div class="twofa-steps">
+        <div class="twofa-step">
+          <div class="twofa-step__num font-mono">01</div>
+          <div class="twofa-step__text">
+            <strong>Install an authenticator app</strong>
+            <span>Google Authenticator, Authy, or 1Password</span>
+          </div>
+        </div>
+        <div class="twofa-step">
+          <div class="twofa-step__num font-mono">02</div>
+          <div class="twofa-step__text">
+            <strong>Scan the QR code</strong>
+            <span>Or enter the key manually below</span>
+          </div>
+        </div>
+        <div class="twofa-step">
+          <div class="twofa-step__num font-mono">03</div>
+          <div class="twofa-step__text">
+            <strong>Enter the 6-digit code</strong>
+            <span>Confirm setup with your app's code</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="twofa-qr-section">
+        <div class="twofa-qr">
+          <img src="data:image/png;base64,{{ qr_b64 }}" alt="TOTP QR Code" width="180" height="180">
+        </div>
+        <div class="twofa-secret">
+          <p class="twofa-secret__label font-mono">Manual entry key</p>
+          <code class="twofa-secret__value font-mono" id="secret-code">{{ secret }}</code>
+          <button class="twofa-copy-btn font-mono" type="button" onclick="copySecret()">Copy key</button>
+        </div>
+      </div>
+    </div>
+
+    <form class="auth-form" method="POST" action="{{ url_for('setup_2fa') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="field">
+        <label class="field__label font-mono" for="code">Verification Code</label>
+        <div class="field__wrap">
+          <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+          <input class="field__input field__input--code font-mono" type="text" id="code" name="code"
+                 placeholder="000 000" maxlength="7" autocomplete="one-time-code"
+                 pattern="\d{6}" inputmode="numeric" required>
+        </div>
+        <span class="field__hint">Enter the 6-digit code from your authenticator app</span>
+      </div>
+
+      <button class="btn btn--primary" type="submit">
+        Verify &amp; Activate
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </button>
+    </form>
+
+    <footer class="auth-footer">
+      <a href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+    </footer>
+  </div>
+</main>
+
+<script>
+function copySecret() {
+  const text = document.getElementById('secret-code').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.twofa-copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy key', 2000);
+  });
+}
+</script>
+{% endblock %}

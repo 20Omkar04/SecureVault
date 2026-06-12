@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Create Account · SecureVault{% endblock %}
+
+{% block content %}
+<main class="auth-layout">
+  <div class="auth-card auth-card--wide">
+
+    <header class="auth-header">
+      <div class="auth-logo">
+        <div class="logo-pulse logo-pulse--1"></div>
+        <div class="logo-pulse logo-pulse--2"></div>
+        <div class="logo-pulse logo-pulse--3"></div>
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h1 class="auth-title">Create Account</h1>
+      <p class="auth-subtitle font-mono">Join SecureVault today</p>
+    </header>
+
+    <form class="auth-form" method="POST" action="{{ url_for('register') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="field-row">
+        <div class="field">
+          <label class="field__label font-mono" for="username">Username</label>
+          <div class="field__wrap">
+            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input class="field__input" type="text" id="username" name="username"
+                   value="{{ username or '' }}" autocomplete="username"
+                   placeholder="your_name" pattern="[a-zA-Z0-9_]{3,32}" required
+                   title="3–32 chars: letters, numbers, underscores">
+          </div>
+          <span class="field__hint">3–32 chars · letters, numbers, _</span>
+        </div>
+
+        <div class="field">
+          <label class="field__label font-mono" for="email">Email Address</label>
+          <div class="field__wrap">
+            <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input class="field__input" type="email" id="email" name="email"
+                   value="{{ email or '' }}" autocomplete="email"
+                   placeholder="you@example.com" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label font-mono" for="password">Password</label>
+        <div class="field__wrap">
+          <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input class="field__input field__input--pw" type="password" id="password" name="password"
+                 autocomplete="new-password" placeholder="Min. 8 characters" required>
+          <button class="field__eye" type="button" data-target="password" aria-label="Show password">
+            <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-on hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <!-- Strength meter -->
+        <div class="strength-meter" id="strength-meter" aria-label="Password strength">
+          <div class="strength-bar"><div class="strength-bar__fill" id="sb-1"></div></div>
+          <div class="strength-bar"><div class="strength-bar__fill" id="sb-2"></div></div>
+          <div class="strength-bar"><div class="strength-bar__fill" id="sb-3"></div></div>
+          <div class="strength-bar"><div class="strength-bar__fill" id="sb-4"></div></div>
+          <span class="strength-label font-mono" id="strength-label"></span>
+        </div>
+        <div class="password-rules" id="pw-rules">
+          <span class="rule" id="rule-len">  8+ characters</span>
+          <span class="rule" id="rule-upper">  Uppercase</span>
+          <span class="rule" id="rule-lower">  Lowercase</span>
+          <span class="rule" id="rule-digit">  Number</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label font-mono" for="confirm_password">Confirm Password</label>
+        <div class="field__wrap">
+          <svg class="field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <input class="field__input field__input--pw" type="password" id="confirm_password" name="confirm_password"
+                 autocomplete="new-password" placeholder="Repeat password" required>
+          <button class="field__eye" type="button" data-target="confirm_password" aria-label="Show password">
+            <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-on hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <span class="field__match font-mono" id="pw-match"></span>
+      </div>
+
+      <button class="btn btn--primary" type="submit" id="submit-btn">
+        Create Account
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </button>
+    </form>
+
+    <footer class="auth-footer">
+      Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+    </footer>
+  </div>
+</main>
+{% endblock %}

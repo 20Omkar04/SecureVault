@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · SecureVault{% endblock %}
+
+{% block content %}
+<div class="dash-layout">
+
+  <!-- Sidebar / Nav -->
+  <aside class="dash-nav">
+    <div class="dash-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span class="font-mono">SecureVault</span>
+    </div>
+
+    <nav class="dash-menu">
+      <a class="dash-menu__item dash-menu__item--active" href="{{ url_for('dashboard') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </a>
+      <a class="dash-menu__item" href="{{ url_for('setup_2fa') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Security
+      </a>
+    </nav>
+
+    <form class="dash-logout" method="POST" action="{{ url_for('logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn--ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </form>
+  </aside>
+
+  <!-- Main content -->
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <h2 class="dash-topbar__title">Dashboard</h2>
+        <p class="dash-topbar__sub font-mono">Welcome back, {{ user.username }}</p>
+      </div>
+      <div class="dash-avatar">{{ user.username[0].upper() }}</div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="dash-stats">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div>
+          <p class="stat-card__label font-mono">Account</p>
+          <p class="stat-card__value">{{ user.username }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div>
+          <p class="stat-card__label font-mono">Email</p>
+          <p class="stat-card__value">{{ user.email }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon {% if user.two_fa_enabled %}stat-card__icon--green{% else %}stat-card__icon--orange{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <p class="stat-card__label font-mono">2FA Status</p>
+          <p class="stat-card__value">
+            {% if user.two_fa_enabled %}
+            <span class="badge badge--green">Active</span>
+            {% else %}
+            <span class="badge badge--orange">Disabled</span>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--muted">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <p class="stat-card__label font-mono">Member Since</p>
+          <p class="stat-card__value">{{ user.created_at[:10] }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security section -->
+    <div class="dash-section">
+      <h3 class="dash-section__title font-mono">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Security Settings
+      </h3>
+
+      <div class="security-card">
+        <div class="security-card__info">
+          <h4>Two-Factor Authentication (2FA)</h4>
+          <p>Add an extra layer of protection with a time-based one-time password (TOTP). Works with Google Authenticator, Authy, and similar apps.</p>
+          {% if user.two_fa_enabled %}
+          <span class="badge badge--green">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            Enabled and protecting your account
+          </span>
+          {% endif %}
+        </div>
+        <div class="security-card__action">
+          {% if user.two_fa_enabled %}
+          <form method="POST" action="{{ url_for('disable_2fa') }}"
+                onsubmit="return confirm('Disable 2FA? Your account will be less secure.')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn--danger">Disable 2FA</button>
+          </form>
+          {% else %}
+          <a href="{{ url_for('setup_2fa') }}" class="btn btn--primary">Enable 2FA</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="security-card">
+        <div class="security-card__info">
+          <h4>Password</h4>
+          <p>Your password is hashed with bcrypt and never stored in plaintext. Change it regularly for best security.</p>
+        </div>
+        <div class="security-card__action">
+          <button class="btn btn--outline" disabled title="Coming soon">Change Password</button>
+        </div>
+      </div>
+
+      <div class="security-card">
+        <div class="security-card__info">
+          <h4>Active Session</h4>
+          <p>Your session is protected with CSRF tokens, HTTPOnly cookies, and expires automatically after 2 hours of inactivity.</p>
+        </div>
+        <div class="security-card__action">
+          <form method="POST" action="{{ url_for('logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn--outline">End Session</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+{% endblock %}
